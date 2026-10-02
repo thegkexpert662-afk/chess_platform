@@ -10,7 +10,8 @@ class GameRealtimeService {
     required String gameId,
     required void Function(Map<String,dynamic>) onMessage,
   }) {
-    final uri=Uri.parse(ApiConfig.baseUrl.replaceFirst('/api','/ws'));
+    final base=ApiConfig.baseUrl.replaceFirst('/api','/ws');
+    final uri=Uri.parse(base.replaceFirst('https://','wss://').replaceFirst('http://','ws://'));
     _channel=WebSocketChannel.connect(uri);
     _channel!.stream.listen((raw){
       try {
