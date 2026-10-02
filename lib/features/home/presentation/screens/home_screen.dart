@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
-import '../../../chess/presentation/screens/chess_screen.dart';
+import '../../../auth/presentation/screens/login_screen.dart';
+import '../../../chess/presentation/screens/online_lobby_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -10,15 +10,23 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Chess Platform')),
       body: Center(
-        child: FilledButton(
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const ChessScreen(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            FilledButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const OnlineLobbyScreen()),
               ),
-            );
-          },
-          child: const Text('Play Chess'),
+              child: const Text('Play Online'),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const LoginScreen()),
+              ),
+              child: const Text('Login'),
+            ),
+          ],
         ),
       ),
     );
