@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'core/network/app_services.dart';
+import 'package:chess_platform/core/network/app_services.dart';
 import '../../data/auth_repository.dart';
 import '../../../home/presentation/screens/home_screen.dart';
 import 'register_screen.dart';
