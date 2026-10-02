@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/theme/app_theme.dart';
-import '../features/home/presentation/screens/home_screen.dart';
+import '../features/auth/presentation/screens/login_screen.dart';
 
 class ChessPlatformApp extends StatelessWidget {
   const ChessPlatformApp({super.key});
@@ -12,7 +12,7 @@ class ChessPlatformApp extends StatelessWidget {
       title: 'Chess Platform',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
-      home: const HomeScreen(),
+      home: const LoginScreen(),
     );
   }
 }
