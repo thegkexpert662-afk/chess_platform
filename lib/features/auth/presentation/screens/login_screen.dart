@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/network/app_services.dart';
 import '../../data/auth_repository.dart';
 import '../../../home/presentation/screens/home_screen.dart';
+import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -36,6 +37,7 @@ class _LoginScreenState extends State<LoginScreen>{
         TextField(controller:password,obscureText:true,decoration:const InputDecoration(labelText:'Password')),
         const SizedBox(height:20),
         FilledButton(onPressed:busy?null:submit,child:Text(busy?'Connecting...':'Login')),
+        TextButton(onPressed:busy?null:()=>Navigator.of(context).push(MaterialPageRoute(builder:(_)=>const RegisterScreen())),child:const Text('Create account')),
       ]),
     ),
   );
