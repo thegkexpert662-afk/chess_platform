@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/network/app_services.dart';
 import '../../data/chess_repository.dart';
+import '../../data/game_realtime_service.dart';
 
 class OnlineGameScreen extends StatefulWidget {
   final String gameId;
@@ -10,6 +11,7 @@ class OnlineGameScreen extends StatefulWidget {
 
 class _OnlineGameScreenState extends State<OnlineGameScreen>{
   final repo=ChessRepository(apiClient);
+  final realtime=GameRealtimeService();
   Map<String,dynamic>? game;
   String? selected;
   bool busy=false;
@@ -57,7 +59,19 @@ class _OnlineGameScreenState extends State<OnlineGameScreen>{
     if(mounted)setState(()=>selected=null);
   }
 
-  @override void initState(){super.initState();refreshGame();}
+  @override void initState(){
+    super.initState();
+    refreshGame();
+    if(apiClient.token!=null){
+      realtime.connect(token:apiClient.token!,gameId:widget.gameId,onMessage:(message){
+        if(message['type']=='game_update' && mounted){
+          refreshGame();
+        }
+      });
+    }
+  }
+
+  @override void dispose(){realtime.dispose();super.dispose();}
 
   @override Widget build(BuildContext context){
     final g=game;
