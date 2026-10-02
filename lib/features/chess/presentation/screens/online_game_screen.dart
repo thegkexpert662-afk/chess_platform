@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/network/app_services.dart';
+import '../../../../core/network/app_services.dart';
 import '../../data/chess_repository.dart';
 import '../../data/game_realtime_service.dart';
 
