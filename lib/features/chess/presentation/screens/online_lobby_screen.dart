@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../../../../core/network/app_services.dart';
+import 'package:chess_platform/core/network/app_services.dart';
 import '../../data/chess_repository.dart';
 import 'online_game_screen.dart';
 
