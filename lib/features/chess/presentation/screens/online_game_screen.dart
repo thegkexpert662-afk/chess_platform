@@ -317,6 +317,7 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
           ]),
         ]),
       ),
+      ),
       body: SafeArea(
         child: LayoutBuilder(builder: (context, constraints) {
           final compact = constraints.maxHeight < 720;
