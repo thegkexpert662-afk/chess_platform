@@ -294,10 +294,54 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
                   duration: const Duration(milliseconds: 100),
                   color: isSelected ? _gold.withValues(alpha: .72) : (light ? _boardLight : _boardDark),
                   alignment: Alignment.center,
-                  child: FittedBox(fit: BoxFit.contain, child: Text(pieceToUnicode(piece),
-                    style: TextStyle(fontSize: compact ? 27 : 34,
-                      color: piece != null && piece == piece.toUpperCase() ? const Color(0xFFFFF8E8) : const Color(0xFF18110C),
-                      shadows: const [Shadow(color: Colors.black38, blurRadius: 2, offset: Offset(1, 1))]))),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Center(
+                        child: FittedBox(
+                          fit: BoxFit.contain,
+                          child: Text(
+                            pieceToUnicode(piece),
+                            style: TextStyle(
+                              fontSize: compact ? 27 : 34,
+                              color: piece != null && piece == piece.toUpperCase()
+                                  ? const Color(0xFFFFF8E8)
+                                  : const Color(0xFF18110C),
+                              shadows: const [
+                                Shadow(color: Colors.black38, blurRadius: 2, offset: Offset(1, 1))
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      if (displayCol == 0)
+                        Positioned(
+                          left: 3,
+                          top: 2,
+                          child: Text(
+                            (isBlackPlayer ? displayRow + 1 : 8 - displayRow).toString(),
+                            style: TextStyle(
+                              color: light ? _boardDark : _boardLight,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                      if (displayRow == 7)
+                        Positioned(
+                          right: 3,
+                          bottom: 1,
+                          child: Text(
+                            String.fromCharCode(97 + (isBlackPlayer ? 7 - displayCol : displayCol)),
+                            style: TextStyle(
+                              color: light ? _boardDark : _boardLight,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
               );
             },
