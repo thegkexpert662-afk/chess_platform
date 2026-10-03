@@ -453,7 +453,7 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
                           fit: BoxFit.contain,
                           child: _piece3D(
                             piece,
-                            compact ? 38 : 48,
+                            compact ? 46 : 58,
                           ),
                         ),
                       ),
@@ -506,44 +506,104 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
     final isWhite = piece == piece.toUpperCase();
     final symbol = pieceToUnicode(piece);
 
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        // Deep lower edge gives both sides the same dimensional chess-piece feel.
-        Text(
-          symbol,
-          style: TextStyle(
-            fontSize: size,
-            color: isWhite
-                ? const Color(0xFFB79A72)
-                : const Color(0xFF070503),
-            fontWeight: FontWeight.w900,
-            shadows: const [
-              Shadow(color: Colors.black87, blurRadius: 4, offset: Offset(2.5, 3.5)),
-              Shadow(color: Color(0xFF6D4A27), blurRadius: 1, offset: Offset(-1, -1)),
+    // Slightly different scale keeps every piece visually balanced.
+    final type = piece.toLowerCase();
+    final scale = switch (type) {
+      'p' => 0.86,
+      'n' || 'b' || 'r' => 0.96,
+      'q' || 'k' => 1.04,
+      _ => 1.0,
+    };
+    final faceSize = size * scale;
+
+    final faceGradient = LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: isWhite
+          ? const [
+              Color(0xFFFFFFFF),
+              Color(0xFFFFF4D6),
+              Color(0xFFD8B980),
+              Color(0xFF8A6844),
+            ]
+          : const [
+              Color(0xFF77716A),
+              Color(0xFF302B26),
+              Color(0xFF0C0A08),
+              Color(0xFF000000),
             ],
+    );
+
+    return SizedBox(
+      width: faceSize * 1.25,
+      height: faceSize * 1.25,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Deep 3D extrusion: several offset layers create a solid side edge.
+          for (int i = 7; i >= 1; i--)
+            Transform.translate(
+              offset: Offset(i * 0.8, i * 1.0),
+              child: Text(
+                symbol,
+                style: TextStyle(
+                  fontSize: faceSize,
+                  color: isWhite
+                      ? Color.lerp(const Color(0xFF8B6A42), const Color(0xFF3D2A18), i / 7)!
+                      : Color.lerp(const Color(0xFF302A24), const Color(0xFF000000), i / 7)!,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ),
+
+          // Dark contact shadow separates the piece from the square.
+          Transform.translate(
+            offset: const Offset(2.5, 4),
+            child: Text(
+              symbol,
+              style: TextStyle(
+                fontSize: faceSize,
+                color: Colors.transparent,
+                fontWeight: FontWeight.w900,
+                shadows: const [
+                  Shadow(color: Colors.black87, blurRadius: 7, offset: Offset(0, 3)),
+                ],
+              ),
+            ),
           ),
-        ),
-        Text(
-          symbol,
-          style: TextStyle(
-            fontSize: size,
-            color: isWhite
-                ? const Color(0xFFFFF8E8)
-                : const Color(0xFF17120D),
-            fontWeight: FontWeight.w900,
-            shadows: isWhite
-                ? const [
-                    Shadow(color: Color(0xFF6B5035), blurRadius: 2, offset: Offset(1.5, 2)),
-                    Shadow(color: Colors.white70, blurRadius: 1, offset: Offset(-1, -1)),
-                  ]
-                : const [
-                    Shadow(color: Color(0xFFE2C48B), blurRadius: 1, offset: Offset(-1, -1)),
-                    Shadow(color: Colors.black87, blurRadius: 3, offset: Offset(2, 2)),
-                  ],
+
+          // Metallic/ivory face with a real vertical gradient.
+          ShaderMask(
+            blendMode: BlendMode.srcIn,
+            shaderCallback: (bounds) => faceGradient.createShader(bounds),
+            child: Text(
+              symbol,
+              style: TextStyle(
+                fontSize: faceSize,
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+                height: 1.0,
+              ),
+            ),
           ),
-        ),
-      ],
+
+          // Small highlight gives the face a raised polished edge.
+          Transform.translate(
+            offset: const Offset(-0.8, -0.8),
+            child: Text(
+              symbol,
+              style: TextStyle(
+                fontSize: faceSize,
+                color: Colors.transparent,
+                fontWeight: FontWeight.w900,
+                shadows: const [
+                  Shadow(color: Colors.white70, blurRadius: 1.2, offset: Offset(-1, -1)),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
