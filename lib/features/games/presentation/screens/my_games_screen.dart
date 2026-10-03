@@ -1,3 +1,14 @@
 import 'package:flutter/material.dart';
 import '../../../home/presentation/screens/advanced_feature_screen.dart';
-class MyGamesScreen extends StatelessWidget { const MyGamesScreen({super.key}); @override Widget build(BuildContext context)=>const AdvancedFeatureScreen(title:'My Games',subtitle:'Review your recent chess matches.',icon:Icons.history_rounded,items:[FeatureItem(Icons.play_circle,'Recent Games','Your latest online games'),FeatureItem(Icons.sports_score,'Results','Wins, losses and draws'),FeatureItem(Icons.visibility,'Game Review','Open a completed game')]);}
+
+class MyGamesScreen extends StatelessWidget {
+  const MyGamesScreen({super.key});
+  @override
+  Widget build(BuildContext context) => const AdvancedFeatureScreen(
+    title: 'My Games',
+    subtitle: 'Your live match history.',
+    icon: Icons.history_rounded,
+    endpoint: '/dashboard',
+    section: 'games',
+  );
+}
