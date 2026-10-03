@@ -4,7 +4,7 @@ class AdvancedFeatureScreen extends StatefulWidget {
   final String title;
   final String subtitle;
   final IconData icon;
-  final List<_FeatureItem> items;
+  final List<FeatureItem> items;
   const AdvancedFeatureScreen({super.key, required this.title, required this.subtitle, required this.icon, required this.items});
   @override State<AdvancedFeatureScreen> createState()=>_AdvancedFeatureScreenState();
 }
@@ -21,6 +21,6 @@ class _AdvancedFeatureScreenState extends State<AdvancedFeatureScreen> with Sing
       const SizedBox(height:18),
       ...widget.items.asMap().entries.map((e)=>Padding(padding:const EdgeInsets.only(bottom:10),child: _item(e.value))),
     ]));
-  Widget _item(_FeatureItem x)=>Material(color:panel,borderRadius:BorderRadius.circular(18),child:InkWell(onTap:()=>ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(x.message??'Coming soon'))),borderRadius:BorderRadius.circular(18),child:Padding(padding:const EdgeInsets.all(17),child:Row(children:[Container(width:42,height:42,decoration:BoxDecoration(color:gold.withValues(alpha:.1),borderRadius:BorderRadius.circular(13)),child:Icon(x.icon,color:gold)),const SizedBox(width:13),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(x.title,style:const TextStyle(color:cream,fontWeight:FontWeight.w800)),const SizedBox(height:3),Text(x.subtitle,style:const TextStyle(color:muted,fontSize:10))])),const Icon(Icons.chevron_right_rounded,color:muted)])));
+  Widget _item(FeatureItem x)=>Material(color:panel,borderRadius:BorderRadius.circular(18),child:InkWell(onTap:()=>ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(x.message??'Coming soon'))),borderRadius:BorderRadius.circular(18),child:Padding(padding:const EdgeInsets.all(17),child:Row(children:[Container(width:42,height:42,decoration:BoxDecoration(color:gold.withValues(alpha:.1),borderRadius:BorderRadius.circular(13)),child:Icon(x.icon,color:gold)),const SizedBox(width:13),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(x.title,style:const TextStyle(color:cream,fontWeight:FontWeight.w800)),const SizedBox(height:3),Text(x.subtitle,style:const TextStyle(color:muted,fontSize:10))])),const Icon(Icons.chevron_right_rounded,color:muted)])));
 }
-class _FeatureItem {final IconData icon;final String title;final String subtitle;final String? message;const _FeatureItem(this.icon,this.title,this.subtitle,[this.message]);}
+class FeatureItem {final IconData icon;final String title;final String subtitle;final String? message;const FeatureItem(this.icon,this.title,this.subtitle,[this.message]);}
