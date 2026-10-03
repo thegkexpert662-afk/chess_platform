@@ -102,8 +102,45 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
     final s = square(actualRow, actualCol);
     final fen = game!['position']['fen'] as String;
 
+    final piece = pieceAt(fen, actualRow, actualCol);
+    final turn = (game!['position']['turn'] ?? 'white').toString();
+    final myColor = isBlackPlayer ? 'black' : 'white';
+    final isMyTurn = turn == myColor;
+
     if (selected == null) {
-      if (pieceAt(fen, actualRow, actualCol) != null) setState(() => selected = s);
+      if (!isMyTurn) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('It is not your turn.')),
+        );
+        return;
+      }
+      if (piece == null) return;
+
+      final isWhitePiece = piece == piece.toUpperCase();
+      final pieceColor = isWhitePiece ? 'white' : 'black';
+      if (pieceColor != myColor) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('You can move only your own pieces.')),
+        );
+        return;
+      }
+
+      setState(() => selected = s);
+      return;
+    }
+
+    // If the second tap is another one of your pieces, select that piece instead.
+    if (piece != null) {
+      final isWhitePiece = piece == piece.toUpperCase();
+      final pieceColor = isWhitePiece ? 'white' : 'black';
+      if (pieceColor == myColor) {
+        setState(() => selected = s);
+        return;
+      }
+    }
+
+    if (!isMyTurn) {
+      setState(() => selected = null);
       return;
     }
 
