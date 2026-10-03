@@ -19,6 +19,8 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
   String? selected;
   bool busy = false;
   Timer? _clockTimer;
+  Timer? _notificationTimer;
+  String? _centerNotification;
   int _whiteMs = 0, _blackMs = 0;
   String _clockTurn = 'white';
   DateTime? _clockStartedAt;
@@ -32,13 +34,23 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
   static const _boardDark = Color(0xFF8A5D36);
   static const _ink = Color(0xFF2B1B10);
 
+  void _showCenterNotification(String message) {
+    final clean = message.replaceFirst(RegExp(r'^Exception:\s*'), '').trim();
+    _notificationTimer?.cancel();
+    if (!mounted) return;
+    setState(() => _centerNotification = clean);
+    _notificationTimer = Timer(const Duration(seconds: 2), () {
+      if (mounted) setState(() => _centerNotification = null);
+    });
+  }
+
   Future<void> refreshGame() async {
     try {
       final data = await repo.game(widget.gameId);
       if (!mounted) return;
       setState(() { game = data; _syncClock(data); });
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+      if (mounted) _showCenterNotification(e.toString());
     }
   }
 
@@ -110,9 +122,7 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
 
     if (selected == null) {
       if (!isMyTurn) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('It is not your turn.')),
-        );
+        _showCenterNotification('It is not your turn.');
         return;
       }
       if (piece == null) return;
@@ -120,9 +130,7 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
       final isWhitePiece = piece == piece.toUpperCase();
       final pieceColor = isWhitePiece ? 'white' : 'black';
       if (pieceColor != myColor) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('You can move only your own pieces.')),
-        );
+        _showCenterNotification('You can move only your own pieces.');
         return;
       }
 
@@ -162,7 +170,7 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
       if (mounted) setState(() { game = data; selected = null; _syncClock(data); });
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+        _showCenterNotification(e.toString());
         setState(() => selected = null);
       }
     } finally {
@@ -249,6 +257,7 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
   @override
   void dispose() {
     _clockTimer?.cancel();
+    _notificationTimer?.cancel();
     realtime.dispose();
     super.dispose();
   }
@@ -318,9 +327,11 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
         ]),
       ),
       body: SafeArea(
-        child: LayoutBuilder(builder: (context, constraints) {
-          final compact = constraints.maxHeight < 720;
-          return Column(children: [
+        child: Stack(
+          children: [
+            LayoutBuilder(builder: (context, constraints) {
+              final compact = constraints.maxHeight < 720;
+              return Column(children: [
             _playerBar(opponentColor, true, _clockText(opponentColor.toLowerCase()), opponentColor.toLowerCase() == (isWhiteTurn ? 'white' : 'black')),
             Expanded(child: Center(child: Padding(
               padding: EdgeInsets.symmetric(horizontal: compact ? 8 : 14, vertical: compact ? 4 : 8),
@@ -370,10 +381,36 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
                 ),
               ),
             ),
-          ]);
-        }),
+              ]);
+            }),
+            if (_centerNotification != null)
+              Center(
+                child: Material(
+                  color: Colors.transparent,
+                  child: Container(
+                    constraints: const BoxConstraints(maxWidth: 320),
+                    margin: const EdgeInsets.symmetric(horizontal: 24),
+                    padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF24180D).withValues(alpha: .97),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: _gold, width: 1.2),
+                      boxShadow: const [
+                        BoxShadow(color: Colors.black54, blurRadius: 18, spreadRadius: 2),
+                      ],
+                    ),
+                    child: Text(
+                      _centerNotification!,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: _cream, fontSize: 15, fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
-    ),
+    );
    );
   }
 
