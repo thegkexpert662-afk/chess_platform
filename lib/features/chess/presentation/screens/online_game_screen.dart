@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:chess_platform/core/network/app_services.dart';
 import '../../data/chess_repository.dart';
 import '../../data/game_realtime_service.dart';
@@ -504,105 +505,26 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
     if (piece == null) return const SizedBox.shrink();
 
     final isWhite = piece == piece.toUpperCase();
-    final symbol = pieceToUnicode(piece);
-
-    // Slightly different scale keeps every piece visually balanced.
+    final color = isWhite ? 'white' : 'black';
     final type = piece.toLowerCase();
+    final file = color + '_' + type + '.svg';
+
     final scale = switch (type) {
-      'p' => 0.86,
-      'n' || 'b' || 'r' => 0.96,
+      'p' => .86,
+      'n' || 'b' || 'r' => .96,
       'q' || 'k' => 1.04,
       _ => 1.0,
     };
-    final faceSize = size * scale;
-
-    final faceGradient = LinearGradient(
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-      colors: isWhite
-          ? const [
-              Color(0xFFFFFFFF),
-              Color(0xFFFFF4D6),
-              Color(0xFFD8B980),
-              Color(0xFF8A6844),
-            ]
-          : const [
-              Color(0xFF77716A),
-              Color(0xFF302B26),
-              Color(0xFF0C0A08),
-              Color(0xFF000000),
-            ],
-    );
 
     return SizedBox(
-      width: faceSize * 1.25,
-      height: faceSize * 1.25,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          // Deep 3D extrusion: several offset layers create a solid side edge.
-          for (int i = 7; i >= 1; i--)
-            Transform.translate(
-              offset: Offset(i * 0.8, i * 1.0),
-              child: Text(
-                symbol,
-                style: TextStyle(
-                  fontSize: faceSize,
-                  color: isWhite
-                      ? Color.lerp(const Color(0xFF8B6A42), const Color(0xFF3D2A18), i / 7)!
-                      : Color.lerp(const Color(0xFF302A24), const Color(0xFF000000), i / 7)!,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-            ),
-
-          // Dark contact shadow separates the piece from the square.
-          Transform.translate(
-            offset: const Offset(2.5, 4),
-            child: Text(
-              symbol,
-              style: TextStyle(
-                fontSize: faceSize,
-                color: Colors.transparent,
-                fontWeight: FontWeight.w900,
-                shadows: const [
-                  Shadow(color: Colors.black87, blurRadius: 7, offset: Offset(0, 3)),
-                ],
-              ),
-            ),
-          ),
-
-          // Metallic/ivory face with a real vertical gradient.
-          ShaderMask(
-            blendMode: BlendMode.srcIn,
-            shaderCallback: (bounds) => faceGradient.createShader(bounds),
-            child: Text(
-              symbol,
-              style: TextStyle(
-                fontSize: faceSize,
-                color: Colors.white,
-                fontWeight: FontWeight.w900,
-                height: 1.0,
-              ),
-            ),
-          ),
-
-          // Small highlight gives the face a raised polished edge.
-          Transform.translate(
-            offset: const Offset(-0.8, -0.8),
-            child: Text(
-              symbol,
-              style: TextStyle(
-                fontSize: faceSize,
-                color: Colors.transparent,
-                fontWeight: FontWeight.w900,
-                shadows: const [
-                  Shadow(color: Colors.white70, blurRadius: 1.2, offset: Offset(-1, -1)),
-                ],
-              ),
-            ),
-          ),
-        ],
+      width: size * 1.35,
+      height: size * 1.35,
+      child: SvgPicture.asset(
+        'assets/chess/' + file,
+        width: size * scale,
+        height: size * scale,
+        fit: BoxFit.contain,
+        semanticsLabel: color + ' chess piece',
       ),
     );
   }
