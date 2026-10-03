@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:chess_platform/core/network/app_services.dart';
 import '../../data/auth_repository.dart';
 import '../../../home/presentation/screens/home_screen.dart';
@@ -123,8 +124,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(32),
-                          child: Image.asset(
-                            'assets/chess_platform_logo.jpg',
+                          child: SvgPicture.asset(
+                            'assets/chess_platform_logo.svg',
                             fit: BoxFit.cover,
                           ),
                         ),
