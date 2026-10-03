@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:chess_platform/core/network/app_services.dart';
 import '../../data/chess_repository.dart';
@@ -32,8 +33,36 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
     return null;
   }
   String square(int row, int col) => String.fromCharCode(97 + col) + (8 - row).toString();
+
+  String? currentUserId() {
+    final token = apiClient.token;
+    if (token == null) return null;
+    try {
+      final parts = token.split('.');
+      if (parts.length != 3) return null;
+      final normalized = base64Url.normalize(parts[1]);
+      final payload = jsonDecode(utf8.decode(base64Url.decode(normalized)));
+      return payload['sub']?.toString();
+    } catch (_) {
+      return null;
+    }
+  }
+
+  bool get isBlackPlayer {
+    final g = game;
+    final userId = currentUserId();
+    if (g == null || userId == null) return false;
+    final gameData = g['game'] as Map;
+    return gameData['black_player_id']?.toString() == userId;
+  }
+
+  String displaySquare(int row, int col) {
+    final actualRow = isBlackPlayer ? 7 - row : row;
+    final actualCol = isBlackPlayer ? 7 - col : col;
+    return square(actualRow, actualCol);
+  }
   Future<void> tapSquare(int row, int col) async {
-    final s = square(row, col);
+    final s = displaySquare(row, col);
     if (selected == null) {
       if (pieceAt(game!['position']['fen'] as String, row, col) != null) setState(() => selected = s);
       return;
@@ -73,10 +102,13 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 8),
             itemCount: 64,
             itemBuilder: (context, index) {
-              final row = index ~/ 8, col = index % 8;
-              final piece = pieceAt(fen, row, col);
-              final light = (row + col).isEven;
-              return InkWell(onTap: busy ? null : () => tapSquare(row, col), child: Container(
+              final displayRow = index ~/ 8;
+              final displayCol = index % 8;
+              final boardRow = isBlackPlayer ? 7 - displayRow : displayRow;
+              final boardCol = isBlackPlayer ? 7 - displayCol : displayCol;
+              final piece = pieceAt(fen, boardRow, boardCol);
+              final light = (displayRow + displayCol).isEven;
+              return InkWell(onTap: busy ? null : () => tapSquare(displayRow, displayCol), child: Container(
                 color: light ? const Color(0xFFF0D9B5) : const Color(0xFFB58863),
                 alignment: Alignment.center,
                 child: FittedBox(child: Text(pieceToUnicode(piece), style: const TextStyle(fontSize: 32))),
