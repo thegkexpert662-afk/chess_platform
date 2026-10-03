@@ -6,12 +6,9 @@ class ComputerScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) => const AdvancedFeatureScreen(
     title: 'Play vs Computer',
-    subtitle: 'Choose your training mode and improve your game.',
+    subtitle: 'Training modes are controlled by the platform.',
     icon: Icons.smart_toy_rounded,
-    items: [
-      FeatureItem(Icons.speed, 'Easy', 'Relaxed practice'),
-      FeatureItem(Icons.bolt, 'Medium', 'Balanced opponent'),
-      FeatureItem(Icons.local_fire_department, 'Hard', 'Serious training'),
-    ],
+    endpoint: '/dashboard',
+    section: 'profile',
   );
 }
