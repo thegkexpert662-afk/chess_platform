@@ -125,7 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(32),
                           child: SvgPicture.asset(
-                            'assets/chess_platform_logo.svg',
+                            'assets/logo.png',
                             fit: BoxFit.cover,
                           ),
                         ),
