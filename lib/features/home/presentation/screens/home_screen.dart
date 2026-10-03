@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../auth/presentation/screens/login_screen.dart';
 import '../../../chess/presentation/screens/online_lobby_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -18,13 +17,6 @@ class HomeScreen extends StatelessWidget {
                 MaterialPageRoute(builder: (_) => const OnlineLobbyScreen()),
               ),
               child: const Text('Play Online'),
-            ),
-            const SizedBox(height: 12),
-            OutlinedButton(
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const LoginScreen()),
-              ),
-              child: const Text('Login'),
             ),
           ],
         ),
