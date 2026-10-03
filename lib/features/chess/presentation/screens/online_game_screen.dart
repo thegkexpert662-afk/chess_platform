@@ -144,9 +144,20 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
       return;
     }
 
+    String? promotion;
+    final selectedPiece = pieceAt(fen, int.parse(selected!.substring(1)) == 8 ? 0 : 8 - int.parse(selected!.substring(1)), selected!.codeUnitAt(0) - 97);
+    final destinationRank = int.parse(s.substring(1));
+    if (selectedPiece?.toLowerCase() == 'p' && (destinationRank == 1 || destinationRank == 8)) {
+      promotion = await _choosePromotion();
+      if (promotion == null) {
+        if (mounted) setState(() => selected = null);
+        return;
+      }
+    }
+
     setState(() => busy = true);
     try {
-      final data = await repo.move(widget.gameId, selected!, s);
+      final data = await repo.move(widget.gameId, selected!, s, promotion: promotion);
       if (mounted) setState(() { game = data; selected = null; _syncClock(data); });
     } catch (e) {
       if (mounted) {
@@ -156,6 +167,65 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
     } finally {
       if (mounted) setState(() => busy = false);
     }
+  }
+
+  Future<String?> _choosePromotion() async {
+    return showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: _panel,
+        title: const Text(
+          'Choose promotion',
+          style: TextStyle(color: _cream, fontWeight: FontWeight.w800),
+        ),
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _promotionButton('q', '♛', 'Queen'),
+            _promotionButton('r', '♜', 'Rook'),
+            _promotionButton('b', '♝', 'Bishop'),
+            _promotionButton('n', '♞', 'Knight'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _promotionButton(String value, String icon, String label) {
+    return InkWell(
+      onTap: () => Navigator.of(context).pop(value),
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        width: 62,
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+        decoration: BoxDecoration(
+          color: _panel2,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: _gold.withValues(alpha: .7)),
+        ),
+        child: Column(
+          children: [
+            Text(
+              icon,
+              style: const TextStyle(
+                fontSize: 34,
+                color: _cream,
+                shadows: [
+                  Shadow(color: Colors.black87, blurRadius: 3, offset: Offset(2, 2)),
+                ],
+              ),
+            ),
+            const SizedBox(height: 3),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: _cream, fontSize: 9, fontWeight: FontWeight.w700),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
