@@ -1,3 +1,3 @@
 import 'package:flutter/material.dart';
-import '../../home/presentation/screens/advanced_feature_screen.dart';
-class TournamentsScreen extends StatelessWidget { const TournamentsScreen({super.key}); @override Widget build(BuildContext context)=>const AdvancedFeatureScreen(title:'Tournaments',subtitle:'Compete in organized chess events.',icon:Icons.emoji_events_rounded,items:[_FeatureItem(Icons.upcoming,'Upcoming','Join upcoming events'),_FeatureItem(Icons.live_tv,'Live','Watch active tournaments'),_FeatureItem(Icons.history,'Completed','View finished events')]);}
+import '../../../home/presentation/screens/advanced_feature_screen.dart';
+class TournamentsScreen extends StatelessWidget { const TournamentsScreen({super.key}); @override Widget build(BuildContext context)=>const AdvancedFeatureScreen(title:'Tournaments',subtitle:'Compete in organized chess events.',icon:Icons.emoji_events_rounded,items:[FeatureItem(Icons.upcoming,'Upcoming','Join upcoming events'),FeatureItem(Icons.live_tv,'Live','Watch active tournaments'),FeatureItem(Icons.history,'Completed','View finished events')]);}
