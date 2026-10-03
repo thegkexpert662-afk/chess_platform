@@ -1,3 +1,14 @@
 import 'package:flutter/material.dart';
 import '../../../home/presentation/screens/advanced_feature_screen.dart';
-class SettingsScreen extends StatelessWidget { const SettingsScreen({super.key}); @override Widget build(BuildContext context)=>const AdvancedFeatureScreen(title:'Settings',subtitle:'Personalize your chess experience.',icon:Icons.settings_rounded,items:[FeatureItem(Icons.volume_up,'Sound','Game and interface sounds'),FeatureItem(Icons.palette,'Board & Pieces','Choose board and piece styles'),FeatureItem(Icons.notifications_active,'Notifications','Manage alerts')]);}
+
+class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({super.key});
+  @override
+  Widget build(BuildContext context) => const AdvancedFeatureScreen(
+    title: 'Settings',
+    subtitle: 'Your saved chess preferences.',
+    icon: Icons.settings_rounded,
+    endpoint: '/dashboard/settings',
+    section: 'settings',
+  );
+}
