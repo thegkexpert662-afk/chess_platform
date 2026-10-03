@@ -336,17 +336,9 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
                       Center(
                         child: FittedBox(
                           fit: BoxFit.contain,
-                          child: Text(
-                            pieceToUnicode(piece),
-                            style: TextStyle(
-                              fontSize: compact ? 27 : 34,
-                              color: piece != null && piece == piece.toUpperCase()
-                                  ? const Color(0xFFFFF8E8)
-                                  : const Color(0xFF18110C),
-                              shadows: const [
-                                Shadow(color: Colors.black38, blurRadius: 2, offset: Offset(1, 1))
-                              ],
-                            ),
+                          child: _piece3D(
+                            piece,
+                            compact ? 38 : 48,
                           ),
                         ),
                       ),
@@ -390,6 +382,53 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
           ])))),
         ]),
       ),
+    );
+  }
+
+  Widget _piece3D(String? piece, double size) {
+    if (piece == null) return const SizedBox.shrink();
+
+    final isWhite = piece == piece.toUpperCase();
+    final symbol = pieceToUnicode(piece);
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        // Deep lower edge gives both sides the same dimensional chess-piece feel.
+        Text(
+          symbol,
+          style: TextStyle(
+            fontSize: size,
+            color: isWhite
+                ? const Color(0xFFB79A72)
+                : const Color(0xFF070503),
+            fontWeight: FontWeight.w900,
+            shadows: const [
+              Shadow(color: Colors.black87, blurRadius: 4, offset: Offset(2.5, 3.5)),
+              Shadow(color: Color(0xFF6D4A27), blurRadius: 1, offset: Offset(-1, -1)),
+            ],
+          ),
+        ),
+        Text(
+          symbol,
+          style: TextStyle(
+            fontSize: size,
+            color: isWhite
+                ? const Color(0xFFFFF8E8)
+                : const Color(0xFF17120D),
+            fontWeight: FontWeight.w900,
+            shadows: isWhite
+                ? const [
+                    Shadow(color: Color(0xFF6B5035), blurRadius: 2, offset: Offset(1.5, 2)),
+                    Shadow(color: Colors.white70, blurRadius: 1, offset: Offset(-1, -1)),
+                  ]
+                : const [
+                    Shadow(color: Color(0xFFE2C48B), blurRadius: 1, offset: Offset(-1, -1)),
+                    Shadow(color: Colors.black87, blurRadius: 3, offset: Offset(2, 2)),
+                  ],
+          ),
+        ),
+      ],
     );
   }
 
