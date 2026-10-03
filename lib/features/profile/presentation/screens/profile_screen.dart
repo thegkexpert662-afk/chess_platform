@@ -1,3 +1,14 @@
 import 'package:flutter/material.dart';
 import '../../../home/presentation/screens/advanced_feature_screen.dart';
-class ProfileScreen extends StatelessWidget { const ProfileScreen({super.key}); @override Widget build(BuildContext context)=>const AdvancedFeatureScreen(title:'Profile',subtitle:'Your rating, statistics and chess identity.',icon:Icons.person_rounded,items:[FeatureItem(Icons.star_rounded,'Rating','1200 • Current rating'),FeatureItem(Icons.bar_chart_rounded,'Statistics','Games, wins, losses and draws'),FeatureItem(Icons.edit_rounded,'Edit Profile','Update your player information')]);}
+
+class ProfileScreen extends StatelessWidget {
+  const ProfileScreen({super.key});
+  @override
+  Widget build(BuildContext context) => const AdvancedFeatureScreen(
+    title: 'Profile',
+    subtitle: 'Your live rating, statistics and chess identity.',
+    icon: Icons.person_rounded,
+    endpoint: '/dashboard',
+    section: 'profile',
+  );
+}
