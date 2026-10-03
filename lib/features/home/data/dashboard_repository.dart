@@ -6,4 +6,5 @@ class DashboardRepository {
   Future<Map<String,dynamic>> notifications() => apiClient.get('/dashboard/notifications');
   Future<Map<String,dynamic>> tournaments() => apiClient.get('/dashboard/tournaments');
   Future<Map<String,dynamic>> settings() => apiClient.get('/dashboard/settings');
+  Future<Map<String,dynamic>> computer() => apiClient.get('/dashboard/computer');
 }
