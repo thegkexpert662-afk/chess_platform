@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../data/dashboard_repository.dart';
+import '../../data/dashboard_repository.dart';
 
 class AdvancedFeatureScreen extends StatefulWidget {
   final String title, subtitle, endpoint, section;
