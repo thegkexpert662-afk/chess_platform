@@ -188,6 +188,11 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
     final isWhiteTurn = position['turn'] == 'white';
     final myColor = isBlackPlayer ? 'Black' : 'White';
     final opponentColor = isBlackPlayer ? 'White' : 'Black';
+    final status = (position['status'] ?? 'active').toString();
+    final kingSquare = position['kingSquare']?.toString();
+    final checkingSquares = ((position['checkingSquares'] as List?) ?? const [])
+        .map((e) => e.toString())
+        .toSet();
 
     return Scaffold(
       backgroundColor: _page,
@@ -210,9 +215,32 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
             _playerBar(opponentColor, true, _clockText(opponentColor.toLowerCase()), opponentColor.toLowerCase() == (isWhiteTurn ? 'white' : 'black')),
             Expanded(child: Center(child: Padding(
               padding: EdgeInsets.symmetric(horizontal: compact ? 8 : 14, vertical: compact ? 4 : 8),
-              child: _board(fen, compact),
+              child: _board(fen, compact, status, kingSquare, checkingSquares),
             ))),
             _playerBar(myColor, false, _clockText(myColor.toLowerCase()), myColor.toLowerCase() == (isWhiteTurn ? 'white' : 'black')),
+            if (status == 'check' || status == 'checkmate')
+              Container(
+                margin: const EdgeInsets.only(bottom: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                decoration: BoxDecoration(
+                  color: status == 'checkmate'
+                      ? const Color(0xFF6E1515)
+                      : const Color(0xFF8B1E1E),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.redAccent.withValues(alpha: .75)),
+                ),
+                child: Text(
+                  status == 'checkmate'
+                      ? 'CHECKMATE • Check from: ' + checkingSquares.join(', ')
+                      : 'CHECK • King on ' + (kingSquare ?? '-') + ' • Check from: ' + checkingSquares.join(', '),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: .5,
+                  ),
+                ),
+              ),
             Padding(
               padding: const EdgeInsets.only(bottom: 4),
               child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -268,7 +296,7 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
     );
   }
 
-  Widget _board(String fen, bool compact) {
+  Widget _board(String fen, bool compact, String status, String? kingSquare, Set<String> checkingSquares) {
     return AspectRatio(
       aspectRatio: 1,
       child: Container(
@@ -288,11 +316,19 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
               final squareName = square(boardRow, boardCol);
               final light = (displayRow + displayCol).isEven;
               final isSelected = selected == squareName;
+              final isCheckKing = status == 'check' && kingSquare == squareName;
+              final isCheckingPiece = checkingSquares.contains(squareName);
               return InkWell(
                 onTap: busy ? null : () => tapSquare(displayRow, displayCol),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 100),
-                  color: isSelected ? _gold.withValues(alpha: .72) : (light ? _boardLight : _boardDark),
+                  color: isCheckKing
+                      ? Colors.red.withValues(alpha: .78)
+                      : isCheckingPiece
+                          ? Colors.red.withValues(alpha: .38)
+                          : isSelected
+                              ? _gold.withValues(alpha: .72)
+                              : (light ? _boardLight : _boardDark),
                   alignment: Alignment.center,
                   child: Stack(
                     fit: StackFit.expand,
