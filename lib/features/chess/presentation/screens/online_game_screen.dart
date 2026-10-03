@@ -374,7 +374,7 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
         }),
       ),
     );
-  });
+  }
 
   Widget _playerBar(String colorName, bool isTop, String clock, bool active) {
     final isWhite = colorName.toLowerCase() == 'white';
