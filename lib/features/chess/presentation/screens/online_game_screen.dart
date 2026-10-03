@@ -214,7 +214,7 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
             Row(children: [
               Container(width: 7, height: 7, decoration: const BoxDecoration(color: Color(0xFF28C76F), shape: BoxShape.circle)),
               const SizedBox(width: 5),
-              Text(active ? 'Your turn' : 'Online', style: TextStyle(color: active ? _gold : Colors.white60, fontSize: 10)),
+              Text(active ? (isTop ? 'Opponent turn' : 'Your turn') : 'Online', style: TextStyle(color: active ? _gold : Colors.white60, fontSize: 10)),
             ]),
           ])),
           Container(
