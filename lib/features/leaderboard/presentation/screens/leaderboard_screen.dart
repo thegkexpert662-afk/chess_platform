@@ -1,3 +1,14 @@
 import 'package:flutter/material.dart';
 import '../../../home/presentation/screens/advanced_feature_screen.dart';
-class LeaderboardScreen extends StatelessWidget { const LeaderboardScreen({super.key}); @override Widget build(BuildContext context)=>const AdvancedFeatureScreen(title:'Leaderboard',subtitle:'See player ratings and rankings.',icon:Icons.leaderboard_rounded,items:[FeatureItem(Icons.public,'Global','Worldwide ranking'),FeatureItem(Icons.flag,'India','Country ranking'),FeatureItem(Icons.trending_up,'Top Players','Highest rated players')]);}
+
+class LeaderboardScreen extends StatelessWidget {
+  const LeaderboardScreen({super.key});
+  @override
+  Widget build(BuildContext context) => const AdvancedFeatureScreen(
+    title: 'Leaderboard',
+    subtitle: 'Live player ratings and rankings.',
+    icon: Icons.leaderboard_rounded,
+    endpoint: '/dashboard',
+    section: 'leaderboard',
+  );
+}
