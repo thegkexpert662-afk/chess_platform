@@ -27,7 +27,105 @@ class _AdvancedFeatureScreenState extends State<AdvancedFeatureScreen> with Sing
     else if(widget.section=='computer'){for(final x in List<Map<String,dynamic>>.from((d['modes']??[]).map((e)=>Map<String,dynamic>.from(e)))){out.add(FeatureItem(Icons.smart_toy_rounded,x['name']?.toString()??'Mode',x['description']?.toString()??''));}out.add(FeatureItem(Icons.timer,'Time controls',(d['timeControls']??[]).join(' • ')));}
     return out;
   }
-  @override Widget build(BuildContext context)=>Scaffold(backgroundColor:bg,appBar:AppBar(backgroundColor:bg,foregroundColor:cream,elevation:0,title:Row(children:[Icon(widget.icon,color:gold),const SizedBox(width:10),Text(widget.title,style:const TextStyle(fontWeight:FontWeight.w900))])),body:FutureBuilder<Map<String,dynamic>>(future:future,builder:(context,snapshot){if(snapshot.connectionState==ConnectionState.waiting)return const Center(child:CircularProgressIndicator(color:gold));if(snapshot.hasError)return Center(child:TextButton(onPressed:_reload,child:const Text('Unable to load • Retry')));final items=_items(snapshot.data!);return RefreshIndicator(onRefresh:_reload,color:gold,backgroundColor:panel,child:ListView(padding:const EdgeInsets.fromLTRB(18,10,18,30),children:[Container(padding:const EdgeInsets.all(22),decoration:BoxDecoration(gradient:const LinearGradient(colors:[Color(0xFF432D17),panel]),borderRadius:BorderRadius.circular(24),border:Border.all(color:gold.withValues(alpha:.3))),child:Row(children:[Icon(widget.icon,color:gold,size:34),const SizedBox(width:14),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(widget.title,style:const TextStyle(color:cream,fontSize:22,fontWeight:FontWeight.w900)),Text(widget.subtitle,style:const TextStyle(color:muted,fontSize:11))]))])),const SizedBox(height:18),...items.map((x)=>_item(x))]));}}));
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: bg,
+      appBar: AppBar(
+        backgroundColor: bg,
+        foregroundColor: cream,
+        elevation: 0,
+        title: Row(
+          children: [
+            Icon(widget.icon, color: gold),
+            const SizedBox(width: 10),
+            Text(
+              widget.title,
+              style: const TextStyle(fontWeight: FontWeight.w900),
+            ),
+          ],
+        ),
+      ),
+      body: FutureBuilder<Map<String, dynamic>>(
+        future: future,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(color: gold),
+            );
+          }
+
+          if (snapshot.hasError) {
+            return Center(
+              child: TextButton(
+                onPressed: _reload,
+                child: const Text('Unable to load • Retry'),
+              ),
+            );
+          }
+
+          final items = _items(snapshot.data ?? <String, dynamic>{});
+
+          return RefreshIndicator(
+            onRefresh: _reload,
+            color: gold,
+            backgroundColor: panel,
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(18, 10, 18, 30),
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(22),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [
+                        Color(0xFF432D17),
+                        panel,
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                      color: gold.withValues(alpha: .3),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(widget.icon, color: gold, size: 34),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.title,
+                              style: const TextStyle(
+                                color: cream,
+                                fontSize: 22,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                            Text(
+                              widget.subtitle,
+                              style: const TextStyle(
+                                color: muted,
+                                fontSize: 11,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 18),
+                ...items.map((x) => _item(x)),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   Widget _item(FeatureItem x)=>Padding(padding:const EdgeInsets.only(bottom:10),child:Material(color:panel,borderRadius:BorderRadius.circular(18),child:Padding(padding:const EdgeInsets.all(17),child:Row(children:[Icon(x.icon,color:gold),const SizedBox(width:13),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(x.title,style:const TextStyle(color:cream,fontWeight:FontWeight.w800)),Text(x.subtitle,style:const TextStyle(color:muted,fontSize:10))])),if(x.message!=null)Text(x.message!,style:const TextStyle(color:gold,fontSize:9))]))));
 }
 class FeatureItem{final IconData icon;final String title,subtitle;final String? message;const FeatureItem(this.icon,this.title,this.subtitle,[this.message]);}
