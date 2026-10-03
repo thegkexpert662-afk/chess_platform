@@ -109,7 +109,7 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
               final piece = pieceAt(fen, boardRow, boardCol);
               final light = (displayRow + displayCol).isEven;
               return InkWell(onTap: busy ? null : () => tapSquare(displayRow, displayCol), child: Container(
-                color: light ? const Color(0xFFF0D9B5) : const Color(0xFFB58863),
+                color: light ? const Color(0xFFF3E6C8) : const Color(0xFF9A7653),
                 alignment: Alignment.center,
                 child: FittedBox(child: Text(pieceToUnicode(piece), style: const TextStyle(fontSize: 32))),
               ));
