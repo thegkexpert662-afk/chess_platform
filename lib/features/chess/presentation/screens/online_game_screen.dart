@@ -236,7 +236,11 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
       realtime.connect(
         token: apiClient.token!,
         gameId: widget.gameId,
-        onMessage: (message) { if (message['type'] == 'game_update' && mounted) refreshGame(); },
+        onMessage: (message) {
+          if ((message['type'] == 'game_update' || message['type'] == 'game_finished') && mounted) {
+            refreshGame();
+          }
+        },
       );
     }
   }
@@ -248,6 +252,30 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
     super.dispose();
   }
 
+  String _formatLastMove() {
+    final move = game?['lastMove'] as Map?;
+    if (move == null) return 'No moves yet';
+    final uci = (move['move_uci'] ?? '').toString();
+    if (uci.length < 4) return uci;
+    final from = uci.substring(0, 2);
+    final to = uci.substring(2, 4);
+    final promotion = uci.length > 4 ? '=' + uci.substring(4).toUpperCase() : '';
+    final playerId = move['player_id']?.toString();
+    final label = playerId != null && playerId == currentUserId() ? 'You' : 'Opponent';
+    return '$label: $from-$to$promotion';
+  }
+
+  Future<bool> _exitGame() async {
+    final status = (game?['game']?['status'] ?? 'active').toString();
+    if (status == 'active') {
+      try {
+        await repo.resign(widget.gameId);
+      } catch (_) {
+        // The WebSocket disconnect handler also forfeits an active game.
+      }
+    }
+    return true;
+  }
   @override
   Widget build(BuildContext context) {
     final g = game;
@@ -264,10 +292,20 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
         .map((e) => e.toString())
         .toSet();
 
-    return Scaffold(
-      backgroundColor: _page,
+    return WillPopScope(
+      onWillPop: _exitGame,
+      child: Scaffold(
+        backgroundColor: _page,
       appBar: AppBar(
-        backgroundColor: _panel, foregroundColor: _cream, elevation: 0, titleSpacing: 18,
+        backgroundColor: _panel, foregroundColor: _cream, elevation: 0, titleSpacing: 8,
+        leading: IconButton(
+          tooltip: 'Exit game',
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () async {
+            final leave = await _exitGame();
+            if (leave && mounted) Navigator.of(context).pop();
+          },
+        ),
         title: Row(children: [
           Container(width: 34, height: 34, decoration: BoxDecoration(color: _gold, borderRadius: BorderRadius.circular(9)),
             child: const Icon(Icons.emoji_events, color: _ink, size: 22)),
@@ -288,44 +326,54 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
               child: _board(fen, compact, status, kingSquare, checkingSquares),
             ))),
             _playerBar(myColor, false, _clockText(myColor.toLowerCase()), myColor.toLowerCase() == (isWhiteTurn ? 'white' : 'black')),
-            if (status == 'check' || status == 'checkmate')
-              Container(
-                margin: const EdgeInsets.only(bottom: 4),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-                decoration: BoxDecoration(
-                  color: status == 'checkmate'
-                      ? const Color(0xFF6E1515)
-                      : const Color(0xFF8B1E1E),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.redAccent.withValues(alpha: .75)),
-                ),
-                child: Text(
-                  status == 'checkmate'
-                      ? 'CHECKMATE • Check from: ' + checkingSquares.join(', ')
-                      : 'CHECK • King on ' + (kingSquare ?? '-') + ' • Check from: ' + checkingSquares.join(', '),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: .5,
-                  ),
+            SizedBox(
+              height: 42,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        _formatLastMove(),
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(color: _cream, fontSize: 12, fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                    if (status == 'check' || status == 'checkmate') ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: status == 'checkmate' ? const Color(0xFF6E1515) : const Color(0xFF8B1E1E),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(color: Colors.redAccent.withValues(alpha: .75)),
+                        ),
+                        child: Text(
+                          status == 'checkmate'
+                              ? 'CHECKMATE • From ' + checkingSquares.join(', ')
+                              : 'CHECK • King ' + (kingSquare ?? '-') + ' • From ' + checkingSquares.join(', '),
+                          style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900),
+                        ),
+                      ),
+                    ],
+                    const SizedBox(width: 6),
+                    Icon(busy ? Icons.sync : Icons.circle, size: 9, color: _gold),
+                    const SizedBox(width: 4),
+                    TextButton(
+                      onPressed: refreshGame,
+                      style: TextButton.styleFrom(foregroundColor: _gold, padding: EdgeInsets.zero, minimumSize: Size.zero),
+                      child: const Text('Refresh'),
+                    ),
+                  ],
                 ),
               ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                const Icon(Icons.circle, size: 9, color: _gold),
-                const SizedBox(width: 6),
-                Text(busy ? 'Submitting move…' : 'Server turn: ${position['turn']}',
-                  style: const TextStyle(color: _cream, fontSize: 12, fontWeight: FontWeight.w600)),
-                const SizedBox(width: 10),
-                TextButton(onPressed: refreshGame,
-                  style: TextButton.styleFrom(foregroundColor: _gold, padding: const EdgeInsets.symmetric(horizontal: 8), minimumSize: Size.zero),
-                  child: const Text('Refresh')),
-              ]),
             ),
-          ]);
+          ].join('
+')
+
         }),
+        ),
       ),
     );
   }
