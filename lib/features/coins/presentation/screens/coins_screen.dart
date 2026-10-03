@@ -1,3 +1,14 @@
 import 'package:flutter/material.dart';
 import '../../../home/presentation/screens/advanced_feature_screen.dart';
-class CoinsScreen extends StatelessWidget { const CoinsScreen({super.key}); @override Widget build(BuildContext context)=>const AdvancedFeatureScreen(title:'Coins',subtitle:'Your virtual chess rewards wallet.',icon:Icons.monetization_on_rounded,items:[FeatureItem(Icons.account_balance_wallet_rounded,'Balance','250 coins available'),FeatureItem(Icons.card_giftcard_rounded,'Earn Coins','Rewards from eligible activities'),FeatureItem(Icons.history_rounded,'Coin History','Track credits and debits')]);}
+
+class CoinsScreen extends StatelessWidget {
+  const CoinsScreen({super.key});
+  @override
+  Widget build(BuildContext context) => const AdvancedFeatureScreen(
+    title: 'Coins',
+    subtitle: 'Your live virtual chess rewards wallet.',
+    icon: Icons.monetization_on_rounded,
+    endpoint: '/dashboard/coins',
+    section: 'coins',
+  );
+}
